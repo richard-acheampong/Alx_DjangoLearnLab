@@ -1,8 +1,11 @@
-delete title book instance
-    command:
-     del book
-    print(book.title, book.author, book.publication_year) 
+#delete title book instance
+from bookshelf.models import Book
+try:
+    book.delete()
+    print("book deleted successfully")  
+except Book.DoesNotExist:
+    print("Book not found)
 
 Expected output:
-    NameError: name 'book' is not defined.
+    book deleted successfully
 
