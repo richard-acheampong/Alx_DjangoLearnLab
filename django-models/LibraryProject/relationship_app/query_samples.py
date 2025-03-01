@@ -1,4 +1,4 @@
-from relatonship_app.models import Book, Author, Library, Librarian
+from relationship_app.models import Book, Author, Library, Librarian
 
 #query all books from a specific author
 def get_book_by_author(Book):
@@ -7,8 +7,8 @@ def get_book_by_author(Book):
 
 #list all books in library
 def list_books_in_library(Library):
-    library = Library.objects.get(name = library_name)
-    return library.books.all()
+    return Library.objects.get(name=library_name)
+    
 
 #retrieve the library of a librarian
 def get_library_of_librarian(Librarian):
