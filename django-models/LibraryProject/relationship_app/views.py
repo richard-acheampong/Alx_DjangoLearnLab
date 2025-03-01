@@ -6,7 +6,7 @@ from django.contrib.auth.forms import UserCreationForm
 from django.shortcuts import redirect
 from django.contrib.auth import login, authenticate
 from django.http import HttpResponse
-from django.contrib.auth.models import user_passes_test
+from django.contrib.auth.decorators import user_passes_test
 
 # Create your views here.
 def list_books(request):
@@ -36,28 +36,31 @@ def register(request):
         form = UserCreationForm()
     return render(request, "relationship_app/register.html", {"form": form})  
 
+# Helper function to check if the user is an admin
 def is_admin(user):
-    return user.is_authenticated and hasattr(user, 'userprofile') and user.userprofile.role == 'Admin'
+    return user.userprofile.role == 'Admin'
 
+# Helper function to check if the user is a librarian
 def is_librarian(user):
     return user.userprofile.role == 'Librarian'
 
+# Helper function to check if the user is a member
 def is_member(user):
     return user.userprofile.role == 'Member'
 
 # Admin view - only accessible by Admin users
 @user_passes_test(is_admin)
 def admin_view(request):
-    return render(request, 'relationship_app/admin_view.html')
+    return render(request, 'admin_view.html')
 
 # Librarian view - only accessible by Librarian users
 @user_passes_test(is_librarian)
 def librarian_view(request):
-    return HttpResponse("Welcome, Librarian!")
+    return render(request, 'librarian_view.html')
 
 # Member view - only accessible by Member users
 @user_passes_test(is_member)
 def member_view(request):
-    return HttpResponse("Welcome, Member!")
+    return render(request, 'member_view.html')
 
  
