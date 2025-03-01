@@ -5,6 +5,8 @@ from django.views.generic.detail import DetailView
 from django.contrib.auth.forms import UserCreationForm
 from django.shortcuts import redirect
 from django.contrib.auth import login, authenticate
+from django.http import HttpResponse
+from django.contrib.auth.models import user_passes_test
 
 # Create your views here.
 def list_books(request):
@@ -32,4 +34,30 @@ def register(request):
             return redirect("login")  # Redirect to login after successful registration
     else:
         form = UserCreationForm()
-    return render(request, "relationship_app/register.html", {"form": form})   
+    return render(request, "relationship_app/register.html", {"form": form})  
+
+def is_admin(user):
+    return user.userprofile.role == 'Admin'
+
+def is_librarian(user):
+    return user.userprofile.role == 'Librarian'
+
+def is_member(user):
+    return user.userprofile.role == 'Member'
+
+# Admin view - only accessible by Admin users
+@user_passes_test(is_admin)
+def admin_view(request):
+    return HttpResponse("Welcome, Admin!")
+
+# Librarian view - only accessible by Librarian users
+@user_passes_test(is_librarian)
+def librarian_view(request):
+    return HttpResponse("Welcome, Librarian!")
+
+# Member view - only accessible by Member users
+@user_passes_test(is_member)
+def member_view(request):
+    return HttpResponse("Welcome, Member!")
+
+ 
