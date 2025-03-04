@@ -15,7 +15,7 @@ from .models import CustomUser
 
 
 # Register your models here.
-class CustomUserModelAdmin(UserAdmin):
+class CustomUserAdmin(UserAdmin):
     model = CustomUser
 
     # Define the fields to display in the Django Admin list view
@@ -42,6 +42,6 @@ class CustomUserModelAdmin(UserAdmin):
     filter_horizontal = ('groups', 'user_permissions')
 
 # Register the Custom User Model
-admin.site.register(CustomUser, CustomUserModelAdmin)
+admin.site.register(CustomUser, CustomUserAdmin)
 
 
