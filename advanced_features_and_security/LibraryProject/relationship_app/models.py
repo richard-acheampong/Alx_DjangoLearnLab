@@ -49,7 +49,7 @@ class CustomUser(AbstractUser):
 
 #custom user manager
 class CustomUserManager(BaseUserManager):
-    def create_user(self, email, username, password=None, date_of_birth=None, profile_photo=profile_photo):
+    def create_user(self, email, username, password=None, date_of_birth=None, profile_photo=None):
         if not email:
             raise ValueError('Users must have an email address')
         if not username:
