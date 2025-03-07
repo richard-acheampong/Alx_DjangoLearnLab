@@ -1,12 +1,27 @@
 from django.db import models
+from django.contrib.auth.models import AbstractUser, BaseUserManager, Permission
+from django.contrib.contenttypes.models import ContentType
+from django.contrib.auth.models import Group
+from django.dispatch import receiver
+from django.db.models.signals import post_save
 
-# Create your models here.
+# Book Model with Custom Permissions
 class Book(models.Model):
     title = models.CharField(max_length=200)
     author = models.CharField(max_length=200)
     publication_year = models.IntegerField()
+    
+    class Meta:
+        permissions = ["can_create", "can_delete", "can_view", "can_edit"]
+            
 
-#custom user model
+# Custom User Model
+class CustomUser(AbstractUser):
+    date_of_birth = models.DateField(null=True, blank=True)
+    profile_photo = models.ImageField(null=True, blank=True)
+
+    from django.contrib.auth.models import AbstractUser, BaseUserManager, Permission, Group
+
 class CustomUser(AbstractUser):
     date_of_birth = models.DateField(null=True, blank=True)
     profile_photo = models.ImageField(null=True, blank=True)
@@ -14,7 +29,7 @@ class CustomUser(AbstractUser):
     def __str__(self):
         return self.username
 
-#custom user manager
+# Custom User Manager
 class CustomUserManager(BaseUserManager):
     def create_user(self, email, username, password=None, date_of_birth=None, profile_photo=None):
         if not email:
@@ -34,10 +49,8 @@ class CustomUserManager(BaseUserManager):
         user.is_staff = True
         user.save(using=self._db)
         return user
-    
 
-
-#user profile model    
+# User Profile Model
 class UserProfile(models.Model):
     ROLE_CHOICES = [
         ('Admin', 'Admin'),
@@ -47,7 +60,6 @@ class UserProfile(models.Model):
     
     user = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
     role = models.CharField(max_length=20, choices=ROLE_CHOICES, default='Member')
-
 
     def __str__(self):
         return f"{self.user.username} - {self.role}"
@@ -59,3 +71,18 @@ class UserProfile(models.Model):
         else:
             instance.userprofile.save()
 
+# Signal to Create Groups and Assign Permissions
+@receiver(post_save, sender=Book)
+def create_groups_and_permissions(sender, **kwargs):
+    groups_permissions = {
+        "Editors": ["can_create", "can_edit"],
+        "Viewers": ["can_view"],
+        "Admins": ["can_create", "can_edit", "can_delete", "can_view"],
+    }
+
+    content_type = ContentType.objects.get_for_model(Book)
+    for group_name, perms in groups_permissions.items():
+        group, created = Group.objects.get_or_create(name=group_name)
+        for perm_code in perms:
+            permission, _ = Permission.objects.get_or_create(codename=perm_code, name=f"Can {perm_code} book", content_type=content_type)
+            group.permissions.add(permission)
