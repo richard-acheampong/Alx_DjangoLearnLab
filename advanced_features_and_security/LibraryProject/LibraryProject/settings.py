@@ -49,6 +49,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'csp.middleware.CSPMiddleware',
 ]
 
 ROOT_URLCONF = 'LibraryProject.urls'
@@ -124,4 +125,23 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-AUTH_USER_MODEL = 'bookshelf.CustomUser'
+#CSP settings
+CSP_DEFAULT_SRC = ("'self'",)  # Restricts content to the same origin
+CSP_SCRIPT_SRC = ("'self'", "https://trusted-scripts.com")  # Allow scripts only from trusted sources
+CSP_STYLE_SRC = ("'self'", "https://trusted-styles.com")  # Allow styles only from trusted sources
+CSP_IMG_SRC = ("'self'", "data:")  # Allow images only from the same origin and inline data URIs
+CSP_FONT_SRC = ("'self'", "https://trusted-fonts.com")  # Allow fonts only from trusted sources
+
+# Secure Browser Headers
+SECURE_BROWSER_XSS_FILTER = True
+X_FRAME_OPTIONS = 'DENY'
+SECURE_CONTENT_TYPE_NOSNIFF = True
+
+# CSRF & Session Security
+CSRF_COOKIE_SECURE = True  # Ensures CSRF cookie is only sent over HTTPS
+SESSION_COOKIE_SECURE = True  # Ensures session cookie is only sent over HTTPS
+CSRF_COOKIE_HTTPONLY = True  # Prevents JavaScript access to CSRF cookie
+SESSION_COOKIE_HTTPONLY = True  # Prevents JavaScript access to session cookie
+
+# HTTPS Security
+SECURE_SSL_REDIRECT = True  # Redirect all HTTP traffic to HTTPS
