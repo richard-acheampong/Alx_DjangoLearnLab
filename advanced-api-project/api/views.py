@@ -2,9 +2,10 @@ from django.shortcuts import render
 from rest_framework import generics
 from .models import Book, Author
 from .serializers import BookSerializer, AuthorSerializer
-from rest_framework import permissions
+from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import status
+
 
 # Create your views here.
 #BookListView for retrieving all books
@@ -17,7 +18,7 @@ class BookListView(generics.ListAPIView):
     """
     queryset = Book.objects.all()  
     serializer_class = BookSerializer # Serialize using the BookSerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly] # Allow read only access to unauthenticated users
+    permission_classes = [IsAuthenticatedOrReadOnly] # Allow read only access to unauthenticated users
 
 #BookDetailView for retrieving a single book by ID
 class BookDetailView(generics.RetrieveAPIView):
@@ -29,7 +30,7 @@ class BookDetailView(generics.RetrieveAPIView):
     """
     queryset = Book.objects.all() #Retrieve all Book objects
     serializer_class = BookSerializer # Serialize using the BookSerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly] # Allow read only access to unauthenticated users
+    permission_classes = [IsAuthenticatedOrReadOnly] # Allow read only access to unauthenticated users
 
 #BookCreateView for adding a new book
 class BookCreateView(generics.CreateAPIView):
@@ -42,7 +43,7 @@ class BookCreateView(generics.CreateAPIView):
     """
     queryset = Book.objects.all() # Saves a new Book instance
     serializer_class = BookSerializer
-    permission_classes = [permissions.IsAuthenticated] # Restrict access to only authenticated users
+    permission_classes = [IsAuthenticated] # Restrict access to only authenticated users
 
     def perform_create(self, serializer):
         # Custom validation: Check if the book already exists before saving
@@ -68,7 +69,7 @@ class BookUpdateView(generics.UpdateAPIView):
     """
     queryset = Book.objects.all() # Retrieve Book to update
     serializer_class = BookSerializer
-    permission_classes = [permissions.IsAuthenticated] # Restrict access to only authenticated users
+    permission_classes = [IsAuthenticated] # Restrict access to only authenticated users
 
     def perform_update(self, serializer):
         # Custom validation: Prevent duplicate books
@@ -93,5 +94,5 @@ class BookDeleteView(generics.DestroyAPIView):
     """
     queryset = Book.objects.all() # Retrieve a Book object to delete
     serializer_class = BookSerializer
-    permission_classes = [permissions.IsAuthenticated] # Restrict access to only authenticated users
+    permission_classes = [IsAuthenticated] # Restrict access to only authenticated users
 
