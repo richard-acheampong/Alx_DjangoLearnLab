@@ -5,10 +5,11 @@ from .serializers import BookSerializer, AuthorSerializer
 from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import status
-from django_filters import rest_framework as filters
+from django_filters import rest_framework
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.filters import SearchFilter, OrderingFilter
 from .filters import BookFilter
+from rest_framework.filters import SearchFilter, OrderingFilter as filters_OrderingFilter
 
 
 # Create your views here.
