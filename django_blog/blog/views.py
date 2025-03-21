@@ -11,6 +11,12 @@ class Homeview(View):
             return render(request, 'home.html')
 
 class RegisterView(View):
+    def dispatch(self, request, *args, **kwargs):
+        #check for method explicitly
+        if request.nethod == 'POST':
+            return self.method_post(request, *args, **kwargs )
+        return self.method_get(request, *args, **kwargs)
+    
     def get(self, request):
         form = CustomUserCreationForm()
         return render(request, 'registration/register.html', {'form' : form})
@@ -24,15 +30,15 @@ class RegisterView(View):
     
 class ProfileView(View):
     @login_required
-    def get(self, request):
+    def method_get(self, request):
         # Get the currently authenticated user
         user = request.user
-        form = CustomUserChangeForm(instance=request.user)
+        form = CustomUserChangeForm(instance=user)
         return render(request, 'profile.html', {'form': form})
         
     
     @login_required
-    def post(self, request):
+    def method_post(self, request):
         # Handle form submission to update user profile
         # user = request.user
         form = CustomUserChangeForm(request.POST, instance=request.user)
